@@ -35,12 +35,14 @@ namespace Apteka_Plus
 
             DisignUserControl.ReadDefaultDisign();
             DisignUserControl.ApplyDisign(this);
+            DisignUserControl.ApplyMenu(this);
         }
 
         private void MainForm_Load(object sender, EventArgs e)
         {
             string id_apteka;
             string id_classif;
+            DisignUserControl.BUTTON_ContextMenu = contextMenuStrip1;
 
             List<string> apteks = SQLClass.MySelect("SELECT id, name FROM level1");
 
@@ -165,6 +167,7 @@ namespace Apteka_Plus
             if (AuthButton.Text == "Выйти")
             {
                 Login = "";
+                isAdmin = 0;
                 AuthPanel.Controls.Clear();
                 AuthPanel.Controls.Add(LoginLabel);
                 LoginTextBox.Text = "";
@@ -177,7 +180,11 @@ namespace Apteka_Plus
                 AuthPanel.Controls.Add(RegButton);
                 HelloLabel.Visible = false;
                 HelloLabel.Text = "";
-                isAdmin = 0;
+                MainUserControl mainUC = new MainUserControl();
+                mainUC.Dock = DockStyle.Fill;
+                InfoPanel.Controls.Clear();
+                InfoPanel.Controls.Add(mainUC);
+                DisignUserControl.ApplyMenu(this);
 
             }
             else
@@ -197,6 +204,7 @@ namespace Apteka_Plus
                     AuthPanel.Controls.Add(AdminFormButton);
                     DisignButton.Visible = Convert.ToBoolean(isAdmin);
                     AuthPanel.Controls.Add(DisignButton);
+                    DisignUserControl.ApplyMenu(this);
                 }
                 else
                 {
@@ -229,7 +237,7 @@ namespace Apteka_Plus
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            DisignUserControl.ApplyDisign(this);
+            //DisignUserControl.ApplyDisign(this);
 
             if (Convert.ToBoolean(isAdmin) && treeView1.Nodes.Count == 1)
             {
@@ -263,6 +271,23 @@ namespace Apteka_Plus
             disignUC.Dock = DockStyle.Fill;
             InfoPanel.Controls.Clear();
             InfoPanel.Controls.Add(disignUC);
+        }
+
+        private void InfoPanel_Resize(object sender, EventArgs e)
+        {
+            MainUserControl mainUC = new MainUserControl();
+            mainUC.Dock = DockStyle.Fill;
+            InfoPanel.Controls.Clear();
+            InfoPanel.Controls.Add(mainUC);
+        }
+
+        private void дизайнКнопкиToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem item = (ToolStripMenuItem)sender;
+            ContextMenuStrip cm = (ContextMenuStrip)(item.GetCurrentParent());
+            Button btn = (Button)(cm.SourceControl);
+            UniqueDiesignForm uniqueDiesign = new UniqueDiesignForm(btn);
+            uniqueDiesign.ShowDialog();
         }
     }
 }
